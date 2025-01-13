@@ -42,14 +42,30 @@ spec:
               protocol: TCP
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.global.postgresql.auth.username }}
+            - name: POSTGRES_DB
+              value: {{ .Values.global.postgresql.auth.database }}
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-postgresql
+            - name: POSTGRES_PORT
+              value: "{{ .Values.global.postgresql.auth.port }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.28
+          command: [ 'sh', '-c', "until nc -z dz4-postgresql 5432; do echo waiting for db; sleep 2; done" ]
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

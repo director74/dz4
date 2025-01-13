@@ -129,9 +129,11 @@ global:
       username: "admin"
       password: "pass"
       database: "users"
+      port: "5432"
 
-primary:
-  persistence:
-    enabled: true
-    size: 1Gi
-    storageClass: "standard"
+postgresql:
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: "standard"
