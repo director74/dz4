@@ -65,7 +65,7 @@ spec:
       initContainers:
         - name: wait-for-db
           image: busybox:1.28
-          command: [ 'sh', '-c', "until nc -z dz4-postgresql 5432; do echo waiting for db; sleep 2; done" ]
+          command: [ 'sh', '-c', "until nc -z {{ .Release.Name }}-postgresql {{ .Values.global.postgresql.auth.port }}; do echo waiting for db; sleep 2; done" ]
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
